@@ -172,7 +172,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             control={form.control}
             name="caseNumber"
             render={({ field }) => (
-              <FormItem className="mt-4">
+              <FormItem className="mt-4" id="numer-zgloszenia">
                 <FormLabel className="font-bold text-base leading-6 text-darkBlue">Numer zgłoszenia</FormLabel>
                 <Input {...field} type="text" placeholder="Wpisz numer zgłoszenia" className="w-full border-0 p-[0px] text-gray border-b-2 rounded-none" />
               </FormItem>
@@ -183,7 +183,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             control={form.control}
             name="visitType"
             render={({ field }) => (
-              <FormItem className="mt-4">
+              <FormItem className="mt-4" id="rodzaj-wizyty">
                 <FormLabel className="font-bold text-base leading-6 text-darkBlue">Rodzaj wizyty</FormLabel>
                 <Select
                   onValueChange={(value) => field.onChange(value)}
@@ -206,7 +206,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             control={form.control}
             name="specialization"
             render={({ field }) => (
-              <FormItem className="mt-4">
+              <FormItem className="mt-4" id="specjalizacja">
                 <FormLabel className="font-bold text-base leading-6 text-darkBlue">Specjalizacja</FormLabel>
                 <Select
                   onValueChange={(value) => field.onChange(value)}
@@ -229,7 +229,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             control={form.control}
             name="caseNumber"
             render={() => (
-              <FormItem className="mt-4">
+              <FormItem className="mt-4" id="data-wizyty">
                 <FormLabel className="font-bold text-base leading-6 text-darkBlue">Data wizyty</FormLabel>
                 <Popover>
                   <PopoverTrigger asChild>
@@ -347,7 +347,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             control={form.control}
             name="topic"
             render={({ field }) => (
-              <FormItem className="mt-4">
+              <FormItem className="mt-4" id="temat">
                 <FormLabel className="font-bold text-base leading-6 text-darkBlue">Temat</FormLabel>
                 <Select
                   onValueChange={(value) => field.onChange(value)}
@@ -370,7 +370,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             control={form.control}
             name="textArea"
             render={({ field }) => (
-              <FormItem className="mt-4">
+              <FormItem className="mt-4" id="dodatkowe-informacje">
                 <FormLabel className="font-bold text-base leading-6 text-darkBlue">Dodatkowe informacje <span className="font-normal">(opcjonalnie)</span></FormLabel>
                 <Textarea {...field} placeholder="Opisz problem" className="border-2 p-2 rounded-none h-[134px] resize-none font-normal text-xs leading-5 text-gray-700 bg-grayScale"/>
               </FormItem>
@@ -381,7 +381,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             control={form.control}
             name="language"
             render={({ field }) => (
-              <FormItem className="mt-4">
+              <FormItem className="mt-4" id="jezyk-wizyty">
                 <FormLabel className="font-bold text-base leading-6 text-darkBlue">Język wizyty</FormLabel>
                 <Select
                   onValueChange={(value) => field.onChange(value)}
@@ -406,7 +406,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           control={form.control}
           name="patientAge"
           render={({ field }) => (
-            <FormItem className="mt-4">
+            <FormItem className="mt-4" id="wiek-pacjenta">
               <FormLabel className="font-bold text-base leading-6 text-darkBlue">Wiek pacjenta</FormLabel>
               <div className="flex space-x-4 mt-2">
                 {/* Przycisk "Dorosły" */}
@@ -441,7 +441,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           control={form.control}
           name="patientData"
           render={() => (
-            <FormItem className="mt-4">
+            <FormItem className="mt-4" id="dane-pacjenta">
               <FormLabel className="font-bold text-base leading-6 text-darkBlue">Dane pacjenta</FormLabel>
               <div className="flex space-x-4 mt-2">
                 {/* Pole "Imię" */}
@@ -465,7 +465,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           control={form.control}
           name="symptoms"
           render={({ field }) => (
-            <FormItem className="mt-4">
+            <FormItem className="mt-4" id="objawy">
               <FormLabel className="font-bold text-base leading-6 text-darkBlue">
                 Objawy <span className="font-normal">(opcjonalnie)</span>
               </FormLabel>
@@ -491,7 +491,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
               control={form.control}
               name="document"
               render={({ field }) => (
-                <FormItem className="mt-4">
+                <FormItem className="mt-4" id="dokument">
                   {/* Tytuł */}
                   <FormLabel className="font-bold text-base leading-6 text-darkBlue">
                     Nazwa dokumentu
@@ -603,7 +603,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           control={form.control}
           name="symptoms"
           render={({ field }) => (
-            <FormItem className="mt-4">
+            <FormItem className="mt-4" id="dane-adresowe">
               <FormLabel className="font-bold text-base leading-6 text-darkBlue">
                 Dane adresowe
               </FormLabel>
@@ -653,7 +653,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                   htmlFor="termsAdress"
                   className="font-normal text-sm leading-[19.6px] pl-4"
               >
-                  Wybierz konkretny przedział godzinowy
+                  Wizyta ma się odbyć na inny adres
               </label>
           </div>
 
