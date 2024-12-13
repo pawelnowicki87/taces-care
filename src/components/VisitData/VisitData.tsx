@@ -166,11 +166,10 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
 
             <FormField
             control={form.control}
-            name="visitDate"
-            render={({ field }) => (
+            name="caseNumber"
+            render={({ }) => (
               <FormItem className="mt-4">
                 <FormLabel className="font-bold text-base leading-6 text-darkBlue">Data wizyty</FormLabel>
-                
                 <Popover>
                   <PopoverTrigger asChild>
                   <Button
