@@ -10,7 +10,6 @@ import {
 import LeftBlock from "@/components/LeftBlock/LeftBlock";
 import RightBlock from "@/components/RightBlock/RightBlock";
 import VisitData from "@/components/VisitData/VisitData";
-import PatientData from "@/components/PatientData/PatientData";
 
 export default function Home() {
   return (
@@ -38,7 +37,6 @@ export default function Home() {
         </div>
         <div className="max-h-[70vh] overflow-y-auto bg-white p-10">
           <VisitData />
-          <PatientData />
         </div>
       </div>
 

@@ -25,6 +25,7 @@ import {
   PopoverTrigger,
 } from "@/components/ui/popover"
 import React from "react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
 
 
 const formSchema = z.object({
@@ -70,12 +71,61 @@ const formSchema = z.object({
       }).refine(data => data.start <= data.end, {
         message: "Start time must be earlier than end time",
       }),
+      patientAge: z
+    .string()
+    .refine((value) => ["Dorosły", "Dziecko"].includes(value), {
+      message: "Please select a valid option for patient age.",
+    }),
+    patientData: z.object({
+      name: z.string().min(1, { message: "Imię jest wymagane" }),
+      surname: z.string().min(1, { message: "Nazwisko jest wymagane" }),
+    }),
+    symptoms: z.string().optional(),
+    document: z.object({
+      type: z.string().refine((value) => ["PESEL", "Paszport"].includes(value), {
+        message: "Please select PESEL or Paszport",
+      }),
+      number: z.string().nonempty({ message: "Numer dokumentu jest wymagany" }),
+      birthDate: z.string().nonempty({ message: "Data urodzenia jest wymagana" }),
+      date: z.date().optional(),
+      pesel: z.string().optional(),
+      passport: z.string().optional(),
+    }),
+    passport: z.string().optional(),
+    pesel: z
+      .string()
+      .min(11, { message: "PESEL musi mieć dokładnie 11 cyfr" })
+      .max(11, { message: "PESEL musi mieć dokładnie 11 cyfr" }),
+    birthDate: z.string().nonempty({ message: "Data urodzenia jest wymagana" }),
 
 });
+
+const extractDateFromPESEL = (pesel: string) => {
+  if (pesel.length !== 11) return null;
+
+  const yearPrefix = parseInt(pesel.substring(0, 2)); // Pierwsze dwa znaki to rok
+  let month = parseInt(pesel.substring(2, 4)); // Kolejne dwa to miesiąc
+  const day = parseInt(pesel.substring(4, 6)); // Kolejne dwa to dzień
+
+  let year = 1900 + yearPrefix; // Przyjmujemy wiek 1900-1999
+  if (month > 20) {
+    year = 2000 + yearPrefix; // Jeśli miesiąc > 20, to rok 2000-2099
+    month -= 20; // Aby uzyskać poprawny miesiąc
+  }
+
+  // Tworzymy obiekt Date z tych wartości
+  return new Date(year, month - 1, day); // month - 1 ponieważ w JS miesiące zaczynają się od 0
+};
+
 
 export default function VisitData() {
 const [isChecked, setIsChecked] = useState(false);
 const [date, setDate] = React.useState<Date>()
+const [isCheckedAdress, setIsCheckedAdress] = useState(false);
+
+const handleChangeAdress = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setIsCheckedAdress(event.target.checked);
+};
 
 const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setIsChecked(event.target.checked);
@@ -95,6 +145,17 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         start: "",
         end: "",
       },
+      patientAge: "",
+      patientData: {
+        name: "",
+        surname: "",
+      },
+      symptoms: "",
+      document: {
+        type: "",
+        number: "",
+        birthDate: "",
+      }
     },
   });
 
@@ -175,7 +236,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                   <Button
                     variant={"outline"}
                     className={cn(
-                    "w-full justify-start text-left font-normal p-[0px] ",
+                    "w-full justify-start text-left font-normal p-[0px]  border-0 text-gray border-b-2 rounded-none ",
                     !date && "text-muted-foreground"
                     )}
                   >
@@ -183,18 +244,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                   </Button>
                   </PopoverTrigger>
                   <PopoverContent className="flex w-full flex-col space-y-2 p-2">
-                  <Select
-                    onValueChange={(value) =>
-                    setDate(addDays(new Date(), parseInt(value)))
-                    }
-                  >
-                    <SelectTrigger>
-                    <SelectValue placeholder="Select" />
-                    </SelectTrigger>
-                    <SelectContent position="popper">
-                    <SelectItem value="0">Jak najszybciej</SelectItem>
-                    </SelectContent>
-                  </Select>
+                  
                   <div className="rounded-md border">
                     <Calendar
                     mode="single"
@@ -219,7 +269,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                 />
                 <label
                     htmlFor="terms"
-                    className="font-normal text-sm leading-[19.6px]"
+                    className="font-normal text-sm leading-[19.6px] pl-4"
                 >
                     Wybierz konkretny przedział godzinowy
                 </label>
@@ -321,7 +371,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             name="textArea"
             render={({ field }) => (
               <FormItem className="mt-4">
-                <FormLabel className="font-bold text-base leading-6 text-darkBlue">Dodatkowe informacje</FormLabel>
+                <FormLabel className="font-bold text-base leading-6 text-darkBlue">Dodatkowe informacje <span className="font-normal">(opcjonalnie)</span></FormLabel>
                 <Textarea {...field} placeholder="Opisz problem" className="border-2 p-2 rounded-none h-[134px] resize-none font-normal text-xs leading-5 text-gray-700 bg-grayScale"/>
               </FormItem>
             )}
@@ -350,8 +400,305 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             )}
             />
 
+          <h1 className="font-light text-[24px] leading-[28.8px] text-darkBlue mt-8">Pacjent</h1>
             
-          <Button type="submit">Submit</Button>
+          <FormField
+          control={form.control}
+          name="patientAge"
+          render={({ field }) => (
+            <FormItem className="mt-4">
+              <FormLabel className="font-bold text-base leading-6 text-darkBlue">Wiek pacjenta</FormLabel>
+              <div className="flex space-x-4 mt-2">
+                {/* Przycisk "Dorosły" */}
+                <button
+                  type="button"
+                  onClick={() => field.onChange("Dorosły")}
+                  className={cn(
+                    "w-full py-2 text-center rounded border",
+                    field.value === "Dorosły" ? "bg-darkBlue text-white" : "bg-white text-darkBlue border-darkBlue"
+                  )}
+                >
+                  Dorosły
+                </button>
+
+                {/* Przycisk "Dziecko" */}
+                <button
+                  type="button"
+                  onClick={() => field.onChange("Dziecko")}
+                  className={cn(
+                    "w-full py-2 text-center rounded border",
+                    field.value === "Dziecko" ? "bg-darkBlue text-white" : "bg-white text-darkBlue border-darkBlue"
+                  )}
+                >
+                  Dziecko
+                </button>
+              </div>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="patientData"
+          render={() => (
+            <FormItem className="mt-4">
+              <FormLabel className="font-bold text-base leading-6 text-darkBlue">Dane pacjenta</FormLabel>
+              <div className="flex space-x-4 mt-2">
+                {/* Pole "Imię" */}
+                <Input
+                  type="text"
+                  placeholder="Imię"
+                  className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
+                />
+                {/* Pole "Nazwisko" */}
+                <Input
+                  type="text"
+                  placeholder="Nazwisko"
+                  className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
+                />
+              </div>
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name="symptoms"
+          render={({ field }) => (
+            <FormItem className="mt-4">
+              <FormLabel className="font-bold text-base leading-6 text-darkBlue">
+                Objawy <span className="font-normal">(opcjonalnie)</span>
+              </FormLabel>
+              <Select
+                onValueChange={(value) => field.onChange(value)}
+                value={field.value}
+              >
+                <SelectTrigger className="w-full border-0 p-[0px] text-gray border-b-2 rounded-none">
+                  <SelectValue placeholder="Wybierz z listy" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="kaszel">Kaszel</SelectItem>
+                  <SelectItem value="gorączka">Gorączka</SelectItem>
+                  <SelectItem value="ból_gardła">Ból gardła</SelectItem>
+                  <SelectItem value="inne">Inne</SelectItem>
+                </SelectContent>
+              </Select>
+            </FormItem>
+          )}
+        />
+
+            <FormField
+              control={form.control}
+              name="document"
+              render={({ field }) => (
+                <FormItem className="mt-4">
+                  {/* Tytuł */}
+                  <FormLabel className="font-bold text-base leading-6 text-darkBlue">
+                    Nazwa dokumentu
+                  </FormLabel>
+
+                  {/* Zamiana przycisków na Tabs */}
+                  <div className="flex gap-4 mt-2">
+                    <Tabs defaultValue="PESEL" className="w-full bg-lig">
+                      <TabsList className="grid w-full grid-cols-2 bg-lightBlue h-[46px] ">
+                        <TabsTrigger value="PESEL"   className="w-full text-center data-[state=active]:bg-white data-[state=active]:h-[40px] data-[state=active]:rounded-md data-[state=active]:scale-95 data-[state=active]:shadow-md flex justify-center items-center align-center mt-[3px]"
+                        >
+                          PESEL
+                        </TabsTrigger>
+                        <TabsTrigger value="Paszport" className="w-full text-center data-[state=active]:bg-white data-[state=active]:h-[40px] data-[state=active]:rounded-md data-[state=active]:scale-95 data-[state=active]:shadow-md flex justify-center items-center align-center mt-[3px]">
+                          Paszport
+                        </TabsTrigger>
+                      </TabsList>
+
+                      {/* Treść dla PESEL i Paszport w jednej linii */}
+                      <div className="flex gap-4 mt-4">
+
+                        <TabsContent value="PESEL" className="w-1/2">
+                          <Input
+                            placeholder="PESEL"
+                            className="w-full border-0 text-gray border-b-2 rounded-none p-0"
+                            value={field.value.pesel || ""}
+                            onChange={(e) => {
+                              const pesel = e.target.value;
+                              field.onChange({ ...field.value, pesel });
+
+                              // Wyciągamy datę z numeru PESEL i ustawiamy ją w polu date
+                              const extractedDate = extractDateFromPESEL(pesel);
+                              if (extractedDate) {
+                                field.onChange({ ...field.value, date: extractedDate });
+                              }
+                            }}
+                          />
+                        </TabsContent>
+
+                        <TabsContent value="PESEL" className="w-1/2">
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full justify-start text-left font-normal p-[0px] border-0 text-gray border-b-2 rounded-none",
+                                  !field.value.date && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value.date ? format(field.value.date, "PPP") : <span>Data urodzenia</span>}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="flex w-full flex-col space-y-2 p-2">
+                              <div className="rounded-md border">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value.date}
+                                  onSelect={(date) => field.onChange({ ...field.value, date })}
+                                  disabled={{ before: new Date(), after: addDays(new Date(), 3) }}
+                                />
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        </TabsContent>
+
+                        {/* Treść dla Paszport */}
+                        <TabsContent value="Paszport" className="w-1/2">
+                          <Input
+                            placeholder="Numer paszportu"
+                            className="w-full p-0 border-0 text-gray border-b-2 rounded-none"
+                            value={field.value.passport || ""}
+                            onChange={(e) => field.onChange({ ...field.value, passport: e.target.value })}
+                          />
+                        </TabsContent>
+
+                        <TabsContent value="Paszport" className="w-1/2">
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <Button
+                                variant={"outline"}
+                                className={cn(
+                                  "w-full justify-start text-left font-normal p-[0px] border-0 text-gray border-b-2 rounded-none",
+                                  !field.value.date && "text-muted-foreground"
+                                )}
+                              >
+                                {field.value.date ? format(field.value.date, "PPP") : <span>Data urodzenia</span>}
+                              </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="flex w-full flex-col space-y-2 p-2">
+                              <div className="rounded-md border">
+                                <Calendar
+                                  mode="single"
+                                  selected={field.value.date}
+                                  onSelect={(date) => field.onChange({ ...field.value, date })}
+                                  disabled={{ before: new Date(), after: addDays(new Date(), 3) }}
+                                />
+                              </div>
+                            </PopoverContent>
+                          </Popover>
+                        </TabsContent>
+                      </div>
+                    </Tabs>
+                  </div>
+                </FormItem>
+              )}
+            />
+
+          <FormField
+          control={form.control}
+          name="symptoms"
+          render={({ field }) => (
+            <FormItem className="mt-4">
+              <FormLabel className="font-bold text-base leading-6 text-darkBlue">
+                Dane adresowe
+              </FormLabel>
+              <Select
+                onValueChange={(value) => field.onChange(value)}
+                value={field.value}
+              >
+                <SelectTrigger className="w-full border-0 p-[0px] text-gray border-b-2 rounded-none">
+                  <SelectValue placeholder="Kraj" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="kaszel">Polska</SelectItem>
+                  <SelectItem value="gorączka">England</SelectItem>
+                  <SelectItem value="ból_gardła">Germany</SelectItem>
+                  <SelectItem value="inne">France</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <div className="flex space-x-4 mt-2">
+                {/* Pole "Imię" */}
+                <Input
+                  type="text"
+                  placeholder="Ulica"
+                  className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
+                />
+                {/* Pole "Nazwisko" */}
+                <Input
+                  type="text"
+                  placeholder="Numer lokalu"
+                  className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
+                />
+              </div>
+              
+            </FormItem>
+          )}
+        />
+
+          <div className="flex items-center mt-2">
+              <input
+                  type="checkbox"
+                  id="termsAdress"
+                  checked={isCheckedAdress}
+                  onChange={handleChangeAdress}
+                  className="h-4 w-4 text-blue-500 border-gray-300 focus:ring-2 focus:ring-blue-500"
+              />
+              <label
+                  htmlFor="termsAdress"
+                  className="font-normal text-sm leading-[19.6px] pl-4"
+              >
+                  Wybierz konkretny przedział godzinowy
+              </label>
+          </div>
+
+          {isCheckedAdress && 
+          <FormField
+          control={form.control}
+          name="symptoms"
+          render={({ field }) => (
+            <FormItem className="mt-4">
+              <FormLabel className="font-bold text-base leading-6 text-darkBlue">
+                Dane adresowe do wizyty
+              </FormLabel>
+              <Select
+                onValueChange={(value) => field.onChange(value)}
+                value={field.value}
+              >
+                <SelectTrigger className="w-full border-0 p-[0px] text-gray border-b-2 rounded-none">
+                  <SelectValue placeholder="Kraj" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="kaszel">Polska</SelectItem>
+                  <SelectItem value="gorączka">England</SelectItem>
+                  <SelectItem value="ból_gardła">Germany</SelectItem>
+                  <SelectItem value="inne">France</SelectItem>
+                </SelectContent>
+              </Select>
+
+              <div className="flex space-x-4 mt-2">
+                {/* Pole "Imię" */}
+                <Input
+                  type="text"
+                  placeholder="Ulica"
+                  className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
+                />
+                {/* Pole "Nazwisko" */}
+                <Input
+                  type="text"
+                  placeholder="Numer lokalu"
+                  className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
+                />
+              </div>
+              
+            </FormItem>
+          )}
+        />}
         </form>
       </Form>
     </div>
