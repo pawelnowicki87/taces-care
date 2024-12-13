@@ -167,7 +167,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             <FormField
             control={form.control}
             name="caseNumber"
-            render={({ }) => (
+            render={() => (
               <FormItem className="mt-4">
                 <FormLabel className="font-bold text-base leading-6 text-darkBlue">Data wizyty</FormLabel>
                 <Popover>
@@ -243,15 +243,25 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                         <SelectValue placeholder="Od" />
                       </SelectTrigger>
                       <SelectContent>
-                        {Array.from({ length: 24 }, (_, index) => (
-                          <SelectItem key={index} value={String(index).padStart(2, "0")}>
-                            {String(index).padStart(2, "0")}:00
-                          </SelectItem>
-                        ))}
+                        {Array.from({ length: 24 }, (_, index) => {
+                          const hour = String(index).padStart(2, "0");
+                          const currentDate = new Date();
+                          const selectedDate = date ? new Date(date) : null;
+                          const isToday = selectedDate && selectedDate.toDateString() === currentDate.toDateString();
+                          const minHour = isToday ? Math.ceil(currentDate.getHours() / 1) + 2 : 0;
+                          if (index >= minHour && index <= 22) {
+                            return (
+                              <SelectItem key={index} value={hour}>
+                                {hour}:00
+                              </SelectItem>
+                            );
+                          }
+                          return null;
+                        })}
                       </SelectContent>
                     </Select>
                   </div>
-          
+
                   {/* Godzina - Do */}
                   <div className="w-1/2">
                     <Select
@@ -262,18 +272,25 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                         <SelectValue placeholder="Do" />
                       </SelectTrigger>
                       <SelectContent>
-                        {Array.from({ length: 24 }, (_, index) => (
-                          <SelectItem key={index} value={String(index).padStart(2, "0")}>
-                            {String(index).padStart(2, "0")}:00
-                          </SelectItem>
-                        ))}
+                        {Array.from({ length: 24 }, (_, index) => {
+                          const hour = String(index).padStart(2, "0");
+                          const fromHour = field.value?.start ? parseInt(field.value.start) + 1 : 0;
+                          if (index >= fromHour && index <= 23) {
+                            return (
+                              <SelectItem key={index} value={hour}>
+                                {hour}:00
+                              </SelectItem>
+                            );
+                          }
+                          return null;
+                        })}
                       </SelectContent>
                     </Select>
                   </div>
                 </div>
               </FormItem>
             )}
-          />}
+            />}
             
 
             <FormField
