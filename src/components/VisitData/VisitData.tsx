@@ -26,6 +26,7 @@ import {
 } from "@/components/ui/popover"
 import React from "react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@radix-ui/react-tabs";
+import { ChevronRight } from "lucide-react";
 
 
 const formSchema = z.object({
@@ -701,6 +702,9 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
         />}
         </form>
       </Form>
+      <Button className="mt-8 w-full bg-white text-primary font-medium text-[16px] leading-[24px] hover:text-white">Dodaj pacjenta</Button> 
+      <Button className="mt-8 w-full bg-primary text-white font-medium text-[16px] leading-[24px] ">Dalej <ChevronRight /></Button> 
     </div>
+    
   );
 }
