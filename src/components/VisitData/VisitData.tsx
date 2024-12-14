@@ -104,18 +104,17 @@ const formSchema = z.object({
 const extractDateFromPESEL = (pesel: string) => {
   if (pesel.length !== 11) return null;
 
-  const yearPrefix = parseInt(pesel.substring(0, 2)); // Pierwsze dwa znaki to rok
-  let month = parseInt(pesel.substring(2, 4)); // Kolejne dwa to miesiąc
-  const day = parseInt(pesel.substring(4, 6)); // Kolejne dwa to dzień
+  const yearPrefix = parseInt(pesel.substring(0, 2));
+  let month = parseInt(pesel.substring(2, 4)); 
+  const day = parseInt(pesel.substring(4, 6)); 
 
-  let year = 1900 + yearPrefix; // Przyjmujemy wiek 1900-1999
+  let year = 1900 + yearPrefix;
   if (month > 20) {
-    year = 2000 + yearPrefix; // Jeśli miesiąc > 20, to rok 2000-2099
-    month -= 20; // Aby uzyskać poprawny miesiąc
+    year = 2000 + yearPrefix; 
+    month -= 20;
   }
 
-  // Tworzymy obiekt Date z tych wartości
-  return new Date(year, month - 1, day); // month - 1 ponieważ w JS miesiące zaczynają się od 0
+  return new Date(year, month - 1, day);
 };
 
 
@@ -606,36 +605,34 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
           render={({ field }) => (
             <FormItem className="mt-4" id="dane-adresowe">
               <FormLabel className="font-bold text-base leading-6 text-darkBlue">
-                Dane adresowe
+              Dane adresowe
               </FormLabel>
               <Select
-                onValueChange={(value) => field.onChange(value)}
-                value={field.value}
+              onValueChange={(value) => field.onChange(value)}
+              value={field.value}
               >
-                <SelectTrigger className="w-full border-0 p-[0px] text-gray border-b-2 rounded-none">
-                  <SelectValue placeholder="Kraj" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="kaszel">Polska</SelectItem>
-                  <SelectItem value="gorączka">England</SelectItem>
-                  <SelectItem value="ból_gardła">Germany</SelectItem>
-                  <SelectItem value="inne">France</SelectItem>
-                </SelectContent>
+              <SelectTrigger className="w-full border-0 p-[0px] text-gray border-b-2 rounded-none">
+                <SelectValue placeholder="Kraj" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="kaszel">Polska</SelectItem>
+                <SelectItem value="gorączka">England</SelectItem>
+                <SelectItem value="ból_gardła">Germany</SelectItem>
+                <SelectItem value="inne">France</SelectItem>
+              </SelectContent>
               </Select>
 
               <div className="flex space-x-4 mt-2">
-                {/* Pole "Imię" */}
-                <Input
-                  type="text"
-                  placeholder="Ulica"
-                  className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
-                />
-                {/* Pole "Nazwisko" */}
-                <Input
-                  type="text"
-                  placeholder="Numer lokalu"
-                  className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
-                />
+              <Input
+                type="text"
+                placeholder="Ulica"
+                className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
+              />
+              <Input
+                type="text"
+                placeholder="Numer lokalu"
+                className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
+              />
               </div>
               
             </FormItem>
@@ -658,48 +655,46 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
               </label>
           </div>
 
-          {isCheckedAdress && 
-          <FormField
-          control={form.control}
-          name="symptoms"
-          render={({ field }) => (
+            {isCheckedAdress && 
+            <FormField
+            control={form.control}
+            name="symptoms"
+            render={({ field }) => (
             <FormItem className="mt-4">
               <FormLabel className="font-bold text-base leading-6 text-darkBlue">
-                Dane adresowe do wizyty
+              Dane adresowe do wizyty
               </FormLabel>
               <Select
-                onValueChange={(value) => field.onChange(value)}
-                value={field.value}
+              onValueChange={(value) => field.onChange(value)}
+              value={field.value}
               >
-                <SelectTrigger className="w-full border-0 p-[0px] text-gray border-b-2 rounded-none">
-                  <SelectValue placeholder="Kraj" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="kaszel">Polska</SelectItem>
-                  <SelectItem value="gorączka">England</SelectItem>
-                  <SelectItem value="ból_gardła">Germany</SelectItem>
-                  <SelectItem value="inne">France</SelectItem>
-                </SelectContent>
+              <SelectTrigger className="w-full border-0 p-[0px] text-gray border-b-2 rounded-none">
+                <SelectValue placeholder="Kraj" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="kaszel">Polska</SelectItem>
+                <SelectItem value="gorączka">England</SelectItem>
+                <SelectItem value="ból_gardła">Germany</SelectItem>
+                <SelectItem value="inne">France</SelectItem>
+              </SelectContent>
               </Select>
 
               <div className="flex space-x-4 mt-2">
-                {/* Pole "Imię" */}
-                <Input
-                  type="text"
-                  placeholder="Ulica"
-                  className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
-                />
-                {/* Pole "Nazwisko" */}
-                <Input
-                  type="text"
-                  placeholder="Numer lokalu"
-                  className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
-                />
+              <Input
+                type="text"
+                placeholder="Ulica"
+                className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
+              />
+              <Input
+                type="text"
+                placeholder="Numer lokalu"
+                className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
+              />
               </div>
               
             </FormItem>
-          )}
-        />}
+            )}
+          />}
         </form>
       </Form>
       <Button className="mt-8 w-full bg-white text-primary font-medium text-[16px] leading-[24px] hover:text-white">Dodaj pacjenta</Button> 
