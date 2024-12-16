@@ -160,7 +160,7 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values); // Logowanie danych po przesłaniu formularza
+    console.log(values);
   }
 
   return (
@@ -283,7 +283,6 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
               <FormItem className="mt-4">
                 <FormLabel className="font-bold text-base leading-6 text-darkBlue">Godzina</FormLabel>
                 <div className="flex space-x-4">
-                  {/* Godzina - Od */}
                   <div className="w-1/2">
                     <Select
                       onValueChange={(value) => field.onChange({ ...field.value, start: value })}
@@ -312,7 +311,6 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                     </Select>
                   </div>
 
-                  {/* Godzina - Do */}
                   <div className="w-1/2">
                     <Select
                       onValueChange={(value) => field.onChange({ ...field.value, end: value })}
@@ -409,7 +407,6 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             <FormItem className="mt-4" id="wiek-pacjenta">
               <FormLabel className="font-bold text-base leading-6 text-darkBlue">Wiek pacjenta</FormLabel>
               <div className="flex space-x-4 mt-2">
-                {/* Przycisk "Dorosły" */}
                 <button
                   type="button"
                   onClick={() => field.onChange("Dorosły")}
@@ -421,7 +418,6 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                   Dorosły
                 </button>
 
-                {/* Przycisk "Dziecko" */}
                 <button
                   type="button"
                   onClick={() => field.onChange("Dziecko")}
@@ -444,13 +440,11 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
             <FormItem className="mt-4" id="dane-pacjenta">
               <FormLabel className="font-bold text-base leading-6 text-darkBlue">Dane pacjenta</FormLabel>
               <div className="flex space-x-4 mt-2">
-                {/* Pole "Imię" */}
                 <Input
                   type="text"
                   placeholder="Imię"
                   className="flex-1 border-0 p-[0px] text-gray border-b-2 rounded-none"
                 />
-                {/* Pole "Nazwisko" */}
                 <Input
                   type="text"
                   placeholder="Nazwisko"
@@ -492,12 +486,10 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
               name="document"
               render={({ field }) => (
                 <FormItem className="mt-4" id="dokument">
-                  {/* Tytuł */}
                   <FormLabel className="font-bold text-base leading-6 text-darkBlue">
                     Nazwa dokumentu
                   </FormLabel>
 
-                  {/* Zamiana przycisków na Tabs */}
                   <div className="flex gap-4 mt-2">
                     <Tabs defaultValue="PESEL" className="w-full bg-lig">
                       <TabsList className="grid w-full grid-cols-2 bg-lightBlue h-[46px] ">
@@ -510,7 +502,6 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                         </TabsTrigger>
                       </TabsList>
 
-                      {/* Treść dla PESEL i Paszport w jednej linii */}
                       <div className="flex gap-4 mt-4">
 
                         <TabsContent value="PESEL" className="w-1/2">
@@ -522,7 +513,6 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                               const pesel = e.target.value;
                               field.onChange({ ...field.value, pesel });
 
-                              // Wyciągamy datę z numeru PESEL i ustawiamy ją w polu date
                               const extractedDate = extractDateFromPESEL(pesel);
                               if (extractedDate) {
                                 field.onChange({ ...field.value, date: extractedDate });
@@ -557,7 +547,6 @@ const handleChange = (event: React.ChangeEvent<HTMLInputElement>) => {
                           </Popover>
                         </TabsContent>
 
-                        {/* Treść dla Paszport */}
                         <TabsContent value="Paszport" className="w-1/2">
                           <Input
                             placeholder="Numer paszportu"
